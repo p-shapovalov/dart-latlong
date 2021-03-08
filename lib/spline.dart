@@ -27,7 +27,6 @@
 ///
 library spline;
 
-import 'package:validate/validate.dart';
 //import 'package:logging/logging.dart';
 
 part 'spline/CatmullRomSpline.dart';
