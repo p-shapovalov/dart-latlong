@@ -42,7 +42,7 @@ LatLng _defaultLatLngFactory(final double latitude, final double longitude) =>
 ///
 ///     final Path<Location> path = new Path<Location>(factory: locationFactory);
 ///
-class Path<T extends LatLng?> {
+class Path<T extends LatLng> {
   final Logger _logger = new Logger('latlong.Path');
 
   /// Coordinates managed by this class
@@ -125,12 +125,12 @@ class Path<T extends LatLng?> {
 
     for (int index = 0; index < coordinates.length - 1; index++) {
       final double distance =
-          _distance(tempCoordinates[index]!, tempCoordinates[index + 1]!)
+          _distance(tempCoordinates[index], tempCoordinates[index + 1])
               as double;
 
       // Remember the direction
-      bearing = _distance.bearing(
-          tempCoordinates[index]!, tempCoordinates[index + 1]!);
+      bearing =
+          _distance.bearing(tempCoordinates[index], tempCoordinates[index + 1]);
 
       if (remainingSteps <= distance ||
           (stepDistance - remainingSteps) <= distance) {
@@ -161,14 +161,14 @@ class Path<T extends LatLng?> {
             CatmullRomSpline2D<double> spline;
 
             if (path.nrOfCoordinates == 3) {
-              spline = _createSpline(path[0]!, path[0]!, path[1]!, path[2]!);
+              spline = _createSpline(path[0], path[0], path[1], path[2]);
 
               // Insert new point between 0 and 1
               path.coordinates.insert(1, _pointToLatLng(spline.percentage(50)));
             } else if (path.nrOfCoordinates > 3) {
               final int baseIndex = path.nrOfCoordinates - 1;
-              spline = _createSpline(path[baseIndex - 3]!, path[baseIndex - 2]!,
-                  path[baseIndex - 1]!, path[baseIndex]!);
+              spline = _createSpline(path[baseIndex - 3], path[baseIndex - 2],
+                  path[baseIndex - 1], path[baseIndex]);
 
               // Insert new point at last position - 2 (pushes the next 2 items down)
               path.coordinates
@@ -183,9 +183,9 @@ class Path<T extends LatLng?> {
 
     // If last step is on the same position as the last generated step
     // then don't add the last base step.
-    if (baseStep?.round() != tempCoordinates.last?.round() &&
-        baseStep?.round() != tempCoordinates.first?.round() &&
-        round(_distance(baseStep!, tempCoordinates.last!) as double) > 1) {
+    if (baseStep.round() != tempCoordinates.last.round() &&
+        baseStep.round() != tempCoordinates.first.round() &&
+        round(_distance(baseStep, tempCoordinates.last) as double) > 1) {
       path.add(tempCoordinates.last);
     }
 
@@ -194,10 +194,10 @@ class Path<T extends LatLng?> {
       int baseIndex = path.nrOfCoordinates - 1;
       if (baseIndex > 3) {
         final CatmullRomSpline2D<double> spline = _createSpline(
-            path[baseIndex - 3]!,
-            path[baseIndex - 2]!,
-            path[baseIndex - 1]!,
-            path[baseIndex - 0]!);
+            path[baseIndex - 3],
+            path[baseIndex - 2],
+            path[baseIndex - 1],
+            path[baseIndex - 0]);
 
         path.coordinates
             .insert(baseIndex - 1, _pointToLatLng(spline.percentage(50)));
@@ -206,12 +206,12 @@ class Path<T extends LatLng?> {
       // Check if there is a remaining gap between the last two elements - close it
       // Could be because of reminder from path divisions
       baseIndex = path.nrOfCoordinates - 1;
-      if (_distance(path[baseIndex - 1]!, path[baseIndex]!)! >= stepDistance) {
+      if (_distance(path[baseIndex - 1], path[baseIndex])! >= stepDistance) {
         final CatmullRomSpline2D<double> spline = _createSpline(
-            path[baseIndex - 1]!,
-            path[baseIndex - 1]!,
-            path[baseIndex - 0]!,
-            path[baseIndex - 0]!);
+            path[baseIndex - 1],
+            path[baseIndex - 1],
+            path[baseIndex - 0],
+            path[baseIndex - 0]);
 
         path.coordinates
             .insert(baseIndex, _pointToLatLng(spline.percentage(50)));
@@ -233,8 +233,7 @@ class Path<T extends LatLng?> {
     double length = 0.0;
 
     for (int index = 0; index < coordinates.length - 1; index++) {
-      length +=
-          _distance(tempCoordinates[index]!, tempCoordinates[index + 1]!)!;
+      length += _distance(tempCoordinates[index], tempCoordinates[index + 1])!;
     }
     return round(length);
   }
@@ -250,7 +249,7 @@ class Path<T extends LatLng?> {
     double lat, lon, hyp;
 
     coordinates.forEach((final T coordinate) {
-      lat = coordinate!.latitudeInRad;
+      lat = coordinate.latitudeInRad;
       lon = coordinate.longitudeInRad;
 
       X += math.cos(lat) * math.cos(lon);
